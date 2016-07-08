@@ -6,6 +6,8 @@ http://www.cnblogs.com/vamei/archive/2013/03/20/2966612.html
 ## Code
 这个复杂度是O(nlogk), n是加入的数字个数
 不用堆的话，复杂度会是O(nk)...
+这里使用的是heap的基本操作：insert, delete
+需要熟练掌握
 ```java
 // Yang - 自己第一次写堆，有点乱，需要稍后改进完善
 ArrayList<Integer> container;
