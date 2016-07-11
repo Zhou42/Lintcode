@@ -1,7 +1,9 @@
 # Max Tree
 整道题的思路就是找到每个node的parent即可。使用decreasing stack，每个元素操作为O(1), 故整体复杂度是O(n)。
 
-# 初期的code，待改进简化
+这个算法还需要具体的查资料，不容易想到。。。不常用到的思路
+
+# Code
 ```java
 	// 思路整理
     // 整道题的思路就是找到每个node的parent即可
@@ -16,48 +18,35 @@
     // 所以这道题只需要：
     // 每个元素出栈的时候，判断自己的parent是谁，改指针即可；而stack中一定最后剩的是root，也就是最大值，返回即可
     
-    
-    
-    // 使用decreasing stack，复杂度是O(n);
-    // decreasing stack的一些性质：
-    // 1. 某A[i]放入时，最后一个pop出来的number 是其左子树的root, 故A[i]的left指向这个number
-    // 2. 连续被pop出来的number，是父子关系，后pop出来的number是父节点，由于其更大
-    // 3. 当所有的number都考虑完了，假象放入一个无穷小，把所有的number 都按照以上规则pop出来 -> 整个树就建好了
-    // 
     public TreeNode maxTree(int[] A) {
-        // write your code here
-        Stack<TreeNode> decStk = new Stack<>();
-        TreeNode curt = new TreeNode(0);
+        // define a decrasing stack
+        Stack<TreeNode> stk = new Stack<>();
+        // 对所有的TreeNode，都是出栈时指定parent结点
         for (int i = 0; i < A.length; i++) {
-            TreeNode newNode = new TreeNode(A[i]);
-            if (i == 0) {
-                decStk.add(newNode);
-            } else {
-                while (!decStk.isEmpty() && decStk.peek().val < A[i]) {
-                    curt = decStk.pop();
-                    if (decStk.isEmpty()) {
-                        // decStk.push(new TreeNode(A[i]));
-                        newNode.left = curt;
-                        break;
-                    } else {
-                        if (decStk.peek().val < A[i]) {
-                            decStk.peek().right = curt;
-                        } else {
-                            // decStk.push(new TreeNode(A[i]));
-                            newNode.left = curt;
-                            break;
-                        }
+            // 当stk不空，且第一个num小于A[i]的时候，为保证递减栈，则pop出来第一个num
+            TreeNode node = new TreeNode(A[i]);
+            // 当1.stk不为空 2.stk的head比A[i]小(否则不会被pop出stk)，进行while
+            while (!stk.isEmpty() && stk.peek().val < node.val) {
+                // pop保证是递减栈，同时指定该元素的parent
+                TreeNode curt = stk.pop();
+                // 如果pop出来之后为空，则curt是A[i]左儿子(因为所有A[i]左侧的数都比A[i]小，组成A[i]的左子树，其中最大的curt，一定是root); 如果pop出来之后不空, 则需要比较stk.peek() 与 A[i]的大小关系
+                if (stk.isEmpty()) {
+                    node.left = curt; // 如果stk为空，则A[i]是curt的parent
+                } else {
+                    // 如果stk的head比A[i]小，则stk的head是curt的parent
+                    if (stk.peek().val < node.val) {
+                        stk.peek().right = curt;
+                    } else { //如果stk的head比A[i]大，则A[i]是curt的parent
+                        node.left = curt;
                     }
                 }
-                decStk.push(newNode);
             }
+            stk.push(node);
         }
-        while (!decStk.isEmpty()) {
-            curt = decStk.pop();
-            if (!decStk.isEmpty()) {
-                decStk.peek().right = curt;
-            }
+        while (stk.size() > 1) {
+            TreeNode curt = stk.pop();
+            stk.peek().right = curt;
         }
-        return curt;
+        return stk.pop();
     }
 ```
